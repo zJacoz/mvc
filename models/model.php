@@ -1,66 +1,56 @@
 <?php
-class AlunoModel
+require_once __DIR__ . "/../config/database.php";
+
+class Aluno
 {
-    private $arquivo = __DIR__ . "/../storage/alunos.json";
+    private PDO $db;
+
+    public function __construct()
+    {
+        $this->db = Database::connect();
+    }
 
     public function listar()
     {
-        if (!file_exists($this->arquivo)) {
-            return [];
-        }
-
-        $json = file_get_contents($this->arquivo);
-        return json_decode($json, true) ?? [];
-    }
-
-    public function salvar($alunos)
-    {
-        $json = json_encode($alunos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        file_put_contents($this->arquivo, $json);
+        $sql = "SELECT * FROM alunos";
+        return $this->db->query($sql)->fetchAll();
     }
 
     public function criar($nome, $nota)
     {
-        $alunos = $this->listar();
+        $situacao = ($nota >= 7) ? "Aprovado" : "Reprovado";
 
-        $alunos[] = [
-            "nome" => $nome,
-            "nota" => $nota,
-            "situacao" => ($nota >= 7) ? "Aprovado" : "Reprovado"
-        ];
+        $sql = "INSERT INTO alunos (nome, nota, situacao)
+                VALUES (:nome, :nota, :situacao)";
 
-        $this->salvar($alunos);
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ":nome" => $nome,
+            ":nota" => $nota,
+            ":situacao" => $situacao
+        ]);
     }
 
     public function atualizar($nome, $nota)
     {
-        $alunos = $this->listar();
+        $situacao = ($nota >= 7) ? "Aprovado" : "Reprovado";
 
-        foreach ($alunos as $i => $a) {
-            if (strtolower($a["nome"]) == strtolower($nome)) {
-                $alunos[$i]["nota"] = $nota;
-                $alunos[$i]["situacao"] = ($nota >= 7) ? "Aprovado" : "Reprovado";
+        $sql = "UPDATE alunos
+                SET nota = :nota, situacao = :situacao
+                WHERE nome = :nome";
 
-                $this->salvar($alunos);
-                return true;
-            }
-        }
-
-        return false;
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ":nota" => $nota,
+            ":situacao" => $situacao,
+            ":nome" => $nome
+        ]);
     }
 
-    public function remover($nome) {
-        $alunos = $this->listar();
-
-        foreach ($alunos as $i => $a) {
-            if (strtolower($a["nome"]) == strtolower($nome)) {
-                unset($alunos[$i]);
-                $this->salvar(array_values($alunos));
-                return true;
-            }
-        }
-
-        return false;
+    public function remover($nome)
+    {
+        $sql = "DELETE FROM alunos WHERE nome = :nome";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([":nome" => $nome]);
     }
 }
-?>
