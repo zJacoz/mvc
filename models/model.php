@@ -24,16 +24,43 @@ class AlunoModel
         $alunos = $this->listar();
 
         $alunos[] = [
-            "nome"=> $nome,
-            "nota"=> $nota,
+            "nome" => $nome,
+            "nota" => $nota,
             "situacao" => ($nota >= 7) ? "Aprovado" : "Reprovado"
         ];
 
         $this->salvar($alunos);
     }
 
-    public function atualizar($nome, $nota) {
+    public function atualizar($nome, $nota)
+    {
         $alunos = $this->listar();
-    } 
+
+        foreach ($alunos as $i => $a) {
+            if (strtolower($a["nome"]) == strtolower($nome)) {
+                $alunos[$i]["nota"] = $nota;
+                $alunos[$i]["situacao"] = ($nota >= 7) ? "Aprovado" : "Reprovado";
+
+                $this->salvar($alunos);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function remover($nome) {
+        $alunos = $this->listar();
+
+        foreach ($alunos as $i => $a) {
+            if (strtolower($a["nome"]) == strtolower($nome)) {
+                unset($alunos[$i]);
+                $this->salvar(array_values($alunos));
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 ?>
