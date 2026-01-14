@@ -9,7 +9,7 @@ class AlunoModel
             return [];
         }
 
-        $json = file_get - contents($this->arquivo);
+        $json = file_get_contents($this->arquivo);
         return json_decode($json, true) ?? [];
     }
 
