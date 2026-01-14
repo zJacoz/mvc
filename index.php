@@ -1,6 +1,7 @@
 <?php
 require_once "views/view.php";
 require_once "controllers/controller.php";
+require_once "helpers/response.php";
 
 function responses($status, $message, $data = null)
 {
