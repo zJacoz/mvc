@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../models/Aluno.php";
+require_once __DIR__ . "/../models/model.php";
 require_once __DIR__ . "/../helpers/response.php";
 
 class AlunoController

@@ -1,5 +1,5 @@
 <?php
-require_once "controllers/AlunoController.php";
+require_once "controllers/controller.php";
 
 $controller = new AlunoController();
 
